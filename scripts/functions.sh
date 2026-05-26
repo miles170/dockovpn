@@ -203,10 +203,14 @@ function generateClientConfig() {
     echo "$(datef) You can access this config file inside your mounted volume directory under clients/$CLIENT_ID/$FILE_NAME"
 }
 
-RESOLVED_HOST_ADDR=$(curl -s -H "X-DockoVPN-Version: $(getVersion) $0" https://ip.dockovpn.io)
+RESOLVED_HOST_ADDR=$(curl -s https://api.ipify.org)
 
 if [[ -n $HOST_ADDR ]]; then
     export HOST_ADDR_INT=$HOST_ADDR
 else
+    if [[ ! $RESOLVED_HOST_ADDR =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        echo "$(datef) Error: Resolved IP address '$RESOLVED_HOST_ADDR' is invalid. Please specify HOST_ADDR manually."
+        exit 1
+    fi
     export HOST_ADDR_INT=$RESOLVED_HOST_ADDR
 fi
