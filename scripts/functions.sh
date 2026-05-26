@@ -82,6 +82,7 @@ EOF
     easyrsa --days=$CRL_DAYS gen-crl
 
     cp /opt/Dockovpn_data/pki/crl.pem /etc/openvpn
+    chmod 644 /etc/openvpn/crl.pem
 
     cd "$APP_INSTALL_PATH"
 }

@@ -115,6 +115,10 @@ fi
 # Copy server keys and certificates
 cp pki/dh.pem pki/ca.crt pki/issued/MyReq.crt pki/private/MyReq.key pki/crl.pem ta.key /etc/openvpn
 
+# Secure permissions for unprivileged execution (crl.pem must be readable by 'nobody')
+chmod 600 /etc/openvpn/MyReq.key /etc/openvpn/ta.key
+chmod 644 /etc/openvpn/ca.crt /etc/openvpn/MyReq.crt /etc/openvpn/dh.pem /etc/openvpn/crl.pem
+
 cd "$APP_INSTALL_PATH"
 
 # Print app version
