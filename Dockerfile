@@ -36,7 +36,6 @@ RUN apk add --no-cache openvpn openvpn-auth-ldap easy-rsa bash netcat-openbsd zi
 
 
 EXPOSE 1194/${HOST_TUN_PROTOCOL}
-EXPOSE 8080/tcp
 
 VOLUME [ "/opt/Dockovpn_data" ]
 

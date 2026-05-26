@@ -88,7 +88,7 @@ test-branch:
 run:
 	docker run --cap-add=NET_ADMIN \
 	-v openvpn_conf:/opt/Dockovpn_data \
-	-p 1194:1194/udp -p 80:8080/tcp \
+	-p 1194:1194/udp \
 	-e HOST_ADDR=localhost \
 	--rm \
 	${DOCKER_REPO}
