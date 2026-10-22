@@ -1,3 +1,16 @@
+FROM alpine:3.24.2 AS openvpn-build
+
+RUN apk add --no-cache alpine-sdk && apk update && \
+    adduser -D builder && addgroup builder abuild
+USER builder
+COPY --chown=builder:builder packaging/openvpn/APKBUILD /home/builder/build/openvpn/APKBUILD
+WORKDIR /home/builder/build/openvpn
+RUN abuild-keygen -a -n
+USER root
+RUN cp /home/builder/.abuild/*.rsa.pub /etc/apk/keys/
+USER builder
+RUN abuild -r
+
 FROM alpine:3.24.2
 
 LABEL maintainer="Alexander Litvinenko <array.shift@yahoo.com>"
@@ -21,9 +34,12 @@ COPY scripts .
 COPY config ./config
 COPY VERSION ./config
 
-RUN apk add --no-cache openvpn openvpn-auth-ldap easy-rsa bash netcat-openbsd zip curl dumb-init iptables iproute2 && \
+# Security fixes: OpenVPN CVE-2026-84790 and OpenSSL's 2026-09-29 advisory.
+RUN --mount=type=bind,from=openvpn-build,source=/home/builder/packages/build,target=/packages \
+    apk add --no-cache --allow-untrusted /packages/*/openvpn-2.7.8-r0.apk && \
+    apk add --no-cache 'openvpn>=2.7.8' 'openssl>=3.5.9' 'libssl3>=3.5.9' 'libcrypto3>=3.5.9' openvpn-auth-ldap easy-rsa bash netcat-openbsd zip curl dumb-init iptables iproute2 && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/bin/easyrsa && \
-    mkdir -p ${APP_PERSIST_DIR} && \
+    mkdir -p ${APP_PERSIST_DIR} /etc/openvpn && \
     cd ${APP_PERSIST_DIR} && \
     easyrsa init-pki && \
     easyrsa gen-dh && \

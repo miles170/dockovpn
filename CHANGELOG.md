@@ -1,5 +1,10 @@
 # Change log
 
+## v1.16.2
+
+- Build OpenVPN 2.7.8 to fix CVE-2026-84790.
+- Require OpenSSL 3.5.9 or newer, including libssl3 and libcrypto3.
+
 ## v1.14.0
 
 - Add ./listconfigs.sh command

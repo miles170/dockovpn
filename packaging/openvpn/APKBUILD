@@ -1,0 +1,42 @@
+# Based on Alpine aports main/openvpn, with the upstream security release.
+pkgname=openvpn
+pkgver=2.7.8
+pkgrel=0
+pkgdesc="Robust, and highly configurable VPN (Virtual Private Network)"
+url="https://openvpn.net/"
+arch="all"
+license="GPL-2.0-only WITH openvpn-openssl-exception"
+subpackages="$pkgname-doc $pkgname-dev"
+depends="iproute2-minimal"
+makedepends="openssl-dev libcap-ng-dev libnl3-dev linux-headers linux-pam-dev lz4-dev lzo-dev pkcs11-helper-dev"
+checkdepends="cmocka-dev bash"
+source="https://build.openvpn.net/downloads/releases/openvpn-$pkgver.tar.gz"
+
+# secfixes:
+#   2.7.8-r0:
+#     - CVE-2026-84790
+
+build() {
+	./configure \
+		--build="$CBUILD" \
+		--host="$CHOST" \
+		--prefix=/usr \
+		--sysconfdir=/etc/openvpn \
+		--enable-dco \
+		--enable-pkcs11 \
+		--disable-dns-updown-by-default
+	make
+}
+
+check() {
+	make check
+}
+
+package() {
+	make DESTDIR="$pkgdir" install
+	install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
+
+sha512sums="
+1461dbe00e35219c06c0e8f5836877522a8d5db786a6f3a6049aebdbb0b326dd816a6fc3197ebd3a5c1019a54e703d52c28af77c747e266e31438d1a9f64b631  openvpn-2.7.8.tar.gz
+"
